@@ -6,4 +6,4 @@ script:
   - FLASK_APP=cluster_app.py
   - flask run
   - URL='http://localhost:5000/cluster?matrix=[[0],[100],[101],[1]]'
-  - [ `curl -g $URL` == '[0, 3, 1, 2]' ]
+  - [ `curl -g $URL` == '[0, 3, 1, 2]' ] && echo 'PASS!'

@@ -6,6 +6,7 @@ install:
   - pip install --upgrade pip
   - pip -V
   - "pip install -r requirements.txt"
+  - "pip install pip install --only-binary=numpy,scipy numpy scipy"
 script:
   - python cluster_app_test.py
   # And as a sanity check, make sure the server actually runs:

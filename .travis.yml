@@ -1,12 +1,23 @@
+# Based on http://lmjohns3.com/2015/06/using-travis-ci-with-miniconda-scipy-and-nose.html
+# Tweaked to specify versions on everything for stability
 language: python
 python:
   - "2.7"
+cache: apt
+addons:
+  apt:
+    packages:
+    - libatlas-dev
+    - libatlas-base-dev
+    - liblapack-dev
+    - gfortran
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda2-4.2.12-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda update --yes conda
 install:
-  - pip -V # Get info on pip to debug install problems.
-  - pip install --upgrade pip
-  - pip -V
-  - "pip install -r requirements.txt"
-  - "pip install pip install --only-binary=numpy,scipy numpy scipy"
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy=1.11.2 scipy=0.18.1 flask=0.12
 script:
   - python cluster_app_test.py
   # And as a sanity check, make sure the server actually runs:

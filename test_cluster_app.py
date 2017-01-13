@@ -2,6 +2,7 @@ import cluster_app
 import unittest
 import numpy as np
 import json
+import os
 
 
 class ClusterAppTestCase(unittest.TestCase):
@@ -51,16 +52,35 @@ class ClusterAppTestCase(unittest.TestCase):
 
     def test_big_matrix(self):
         np.random.seed(1)
-        concat = ClusterAppTestCase.random_matrix_concat([10, 20, 30, 40, 50, 60, 70, 80, 90, 100], 500, 50)
-        self.assertEqual(len(concat), 10 * 500)
+        means = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        concat = ClusterAppTestCase.random_matrix_concat(means, 500, 50)
+        self.assertEqual(len(concat), len(means) * 500)
         self.assertEqual(len(concat[0]), 50)
         r = self.app.get('/cluster?matrix=%s' % concat)
         permutation = json.loads(r.data)
-        self.assertEqual(len(permutation), 10 * 500)
+        self.assertEqual(len(permutation), len(means) * 500)
         # Again, exact ordering of chunks may vary.
         self.assertTrue(all([x >= 1000 and x < 1500 for x in permutation[0:500]]))
         self.assertTrue(all([x >= 500 and x < 1000 for x in permutation[500:1000]]))
         self.assertTrue(all([x >= 0 and x < 500 for x in permutation[1000:1500]]))
+
+    def test_bigger_matrix(self):
+        np.random.seed(1)
+        chunk = 100 # int(os.environ['CHUNK'])
+        # chunk * 10: user + sys
+        # 5000: 4
+        # 10000: 8
+        # 15000: 15
+        # 20000: 24
+        # 30000: 58
+        # 40000: 116
+        means = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        concat = ClusterAppTestCase.random_matrix_concat(means, chunk, 50)
+        self.assertEqual(len(concat), len(means) * chunk)
+        self.assertEqual(len(concat[0]), 50)
+        r = self.app.get('/cluster?matrix=%s' % concat)
+        permutation = json.loads(r.data)
+        self.assertEqual(len(permutation), len(means) * chunk)
 
 
 if __name__ == '__main__':

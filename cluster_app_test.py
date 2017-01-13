@@ -10,5 +10,9 @@ class ClusterAppTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_small_matrix(self):
+        r = self.app.get('/cluster?matrix=[[101],[1],[11],[2],[12],[102]]')
+        self.assertEqual(r.data, '[0, 5, 2, 4, 1, 3]')
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,9 +1,29 @@
+# Based on http://lmjohns3.com/2015/06/using-travis-ci-with-miniconda-scipy-and-nose.html
+# Tweaked to specify versions on everything for stability
 language: python
 python:
   - "2.7"
-install: "pip install -r requirements.txt"
+cache: apt
+addons:
+  apt:
+    packages:
+    - libatlas-dev
+    - libatlas-base-dev
+    - liblapack-dev
+    - gfortran
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda2-4.2.12-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  # Prefer stability to having the latest
+  #- conda update --yes conda
+install:
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy=1.11.2 scipy=0.18.1 flask=0.12
 script:
-  - FLASK_APP=cluster_app.py
-  - flask run
+  - python -m unittest discover
+  # And as a sanity check, make sure the server actually runs:
+  - export FLASK_APP=cluster_app.py
+  - flask run &
   - URL='http://localhost:5000/cluster?matrix=[[0],[100],[101],[1]]'
-  - [ `curl -g $URL` == '[0, 3, 1, 2]' ]
+  - until $(curl --output /dev/null --silent --fail --globoff $URL); do echo '.'; sleep 1; done
+  - "[[ `curl -g $URL` == '[0, 3, 1, 2]' ]] && echo 'PASS!'"

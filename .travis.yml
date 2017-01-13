@@ -15,11 +15,12 @@ before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda2-4.2.12-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
-  - conda update --yes conda
+  # Prefer stability to having the latest
+  #- conda update --yes conda
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy=1.11.2 scipy=0.18.1 flask=0.12
 script:
-  - python cluster_app_test.py
+  - python -m unittest discover
   # And as a sanity check, make sure the server actually runs:
   - export FLASK_APP=cluster_app.py
   - flask run &

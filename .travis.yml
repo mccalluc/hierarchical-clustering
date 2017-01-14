@@ -20,6 +20,7 @@ before_install:
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy=1.11.2 scipy=0.18.1 flask=0.12
 script:
+  - set -e
   - python -m unittest discover
   # And as a sanity check, make sure the server actually runs:
   - export FLASK_APP=cluster_app.py

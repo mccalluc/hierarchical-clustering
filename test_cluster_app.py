@@ -2,7 +2,8 @@ import cluster_app
 import unittest
 import numpy as np
 import json
-import os
+from os import environ, unlink
+from tempfile import mkdtemp
 
 
 class ClusterAppTestCase(unittest.TestCase):

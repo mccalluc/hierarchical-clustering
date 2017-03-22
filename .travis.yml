@@ -19,6 +19,7 @@ before_install:
   #- conda update --yes conda
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy=1.11.2 scipy=0.18.1 flask=0.12
+  - export STATIC_DIR=/tmp/timestamp_here
 script:
   - set -e
   - python -m unittest discover

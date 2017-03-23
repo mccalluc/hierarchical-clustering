@@ -21,10 +21,7 @@ install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy=1.11.2 scipy=0.18.1 flask=0.12
 script:
   - set -e
-  - python -m unittest discover
-  # And as a sanity check, make sure the server actually runs:
-  - export FLASK_APP=cluster_app.py
-  - flask run &
-  - URL='http://localhost:5000/cluster?matrix=[[0],[100],[101],[1]]'
-  - until $(curl --output /dev/null --silent --fail --globoff $URL); do echo '.'; sleep 1; done
-  - "[[ `curl -g $URL` == '[0, 3, 1, 2]' ]] && echo 'PASS!'"
+  - export CLUSTER_PORT=8000
+  - python -m CGIHTTPServer $CLUSTER_PORT &
+  - sleep 1
+  - python test.py
